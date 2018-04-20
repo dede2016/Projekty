@@ -1,0 +1,74 @@
+---
+title: "raport"
+output: html_document
+---
+```{r}
+library(rvest)
+library(xml2)
+
+daneDF <- data.frame()
+
+url_pracuj <- "https://www.pracuj.pl/praca/C%2b%2b;kw?pn="
+vec_strony <- c(1, 2, 3)
+
+for (a in vec_strony) {
+  url <- paste(url_pracuj, a, sep="")
+  link <- read_html(url)
+  h <- html_nodes(link, 'h2 [itemprop="title"]')
+  dane <- html_text(h)
+  for (i in 1:length(dane)) {
+    daneDF[i+(50*(a-1)), 1] <- dane[i]
+  }
+}
+
+#daneDF[, 1]
+
+for (a in vec_strony) {
+  url <- paste(url_pracuj, a, sep="")
+  link <- read_html(url)
+  h <- html_nodes(link, 'h3 [itemprop="name"]')
+  dane <- html_text(h)
+  for (i in 1:length(dane)) {
+    daneDF[i+(50*(a-1)), 2] <- dane[i]
+  }
+}
+
+#daneDF[, 2]
+
+for (a in vec_strony) {
+  url <- paste(url_pracuj, a, sep="")
+  link <- read_html(url)
+  h <- html_nodes(link, 'span [itemprop="addressRegion"]')
+  dane <- html_text(h)
+  for (i in 1:length(dane)) {
+    daneDF[i+(50*(a-1)), 3] <- dane[i]
+  }
+}
+
+#daneDF[, 3]
+
+b <- sample(3000:10000, 150)
+
+for (s in 1:150) {
+  daneDF[s, 4] <- b[s]
+  if (is.na(daneDF[s, 3])) {
+    daneDF[s, 3] <- "Nieznana lokalizacja"
+  }
+}
+
+colnames(daneDF) <- c("Oferta pracy", "Firma", "Miejscowosc", "Zarobki")
+
+daneDF
+
+#head(daneDF)
+
+#filename <- "C:/Users/Student/Documents/R/webscraper.csv"
+
+#write.csv(daneDF, file=filename, row.names=FALSE)
+
+#data <- read.csv(file=filename)
+#data
+
+
+```
+
